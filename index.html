@@ -3,345 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creative Countdown</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+    <title>Participant Registration</title>
     <style>
-        body, html {
+        :root {
+            --zoom-blue: #0b5cff;
+            --zoom-dark: #232333;
+            --bg-color: #f0f3f5;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Nunito', sans-serif;
-            background-image: url('https://i.pinimg.com/736x/d2/c5/32/d2c5329cf6ecd7bdc5950a22262ccf26.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-
-        /* 1. Moving Lines Overlay */
-        .moving-lines {
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(
-                45deg,
-                rgba(255, 255, 255, 0.05),
-                rgba(255, 255, 255, 0.05) 10px,
-                transparent 10px,
-                transparent 20px
-            );
-            background-size: 200% 200%;
-            animation: moveLines 15s linear infinite;
-            z-index: -2;
-        }
-
-        @keyframes moveLines {
-            0% { background-position: 0 0; }
-            100% { background-position: 100% 100%; }
-        }
-
-        /* 2. Mouse Trail Canvas */
-        #trailCanvas {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none; /* Let clicks pass through to the card */
-            z-index: 10;
-        }
-
-        /* Main Container */
-        .container {
-            position: relative;
-            width: 100%; height: 100%;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 5;
+            background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
+            background-size: 200% 200%;
+            animation: gradientBG 10s ease infinite;
         }
-
-        /* Countdown UI */
-        #countdown-container {
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .modal {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            backdrop-filter: blur(10px);
+        }
+        @keyframes slideUp {
+            to { transform: translateY(0); opacity: 1; }
+        }
+        h2 {
             text-align: center;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 40px 60px;
-            border-radius: 30px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            transform: scale(1);
-            transition: transform 0.3s ease;
+            color: var(--zoom-dark);
+            margin-bottom: 20px;
         }
-
-        #countdown-container:hover {
-            transform: scale(1.02);
-        }
-
-        .title {
-            color: #fff;
-            font-family: 'Fredoka One', cursive;
-            font-size: 2.5rem;
-            margin-bottom: 5px; /* Reduced to make room for the date */
-            text-shadow: 0 4px 15px rgba(255, 105, 180, 0.6);
-            letter-spacing: 2px;
-        }
-
-        /* NEW: Styling for the auto-calculated date display */
-        .target-date-display {
-            color: #ffb3d9;
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin-bottom: 25px;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            text-transform: uppercase;
-        }
-
-        .time-blocks {
-            display: flex;
-            gap: 20px;
-        }
-
-        .time-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 20px;
-            border-radius: 20px;
-            min-width: 90px;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
-        }
-
-        .number {
-            font-family: 'Fredoka One', cursive;
-            font-size: 4rem;
-            color: #ffb3d9;
-            text-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
-            line-height: 1;
-        }
-
-        .label {
-            color: #fff;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 10px;
-            opacity: 0.9;
-        }
-
-        /* Final Card UI (Hidden initially) */
-        #final-card {
-            display: none; /* Hidden by default */
-            border-radius: 30px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.4);
-            cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .avatar-container {
+            height: 120px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
             background: #fff;
-            animation: popIn 0.8s ease forwards;
         }
-
-        #final-card:hover {
-            transform: scale(1.05) translateY(-10px);
-            box-shadow: 0 30px 70px rgba(0,0,0,0.6), 0 0 50px rgba(255, 105, 180, 0.6);
+        .avatar-item {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
         }
-
-        #final-card img {
+        .avatar-item:hover {
+            transform: scale(1.1);
+        }
+        .avatar-item.selected {
+            border-color: var(--zoom-blue);
+            box-shadow: 0 0 10px rgba(11, 92, 255, 0.5);
+            transform: scale(1.1);
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
             display: block;
-            width: 300px; /* Adjust size as needed */
-            height: auto;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
+            font-weight: 600;
         }
-
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+            font-family: inherit;
+            background-color: white;
         }
-
-        /* Floating Hearts Animation */
-        .heart {
-            position: absolute;
-            color: rgba(255, 105, 180, 0.6);
-            font-size: 20px;
-            user-select: none;
-            z-index: -1;
-            animation: floatUp linear infinite;
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--zoom-blue);
+            box-shadow: 0 0 0 2px rgba(11, 92, 255, 0.2);
         }
-
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100px) scale(1.5) rotate(360deg); opacity: 0; }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--zoom-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
         }
+        .btn:hover {
+            background-color: #0046d6;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        #statusMessage {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+        .loader {
+            display: none;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--zoom-blue);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="moving-lines"></div>
-    <canvas id="trailCanvas"></canvas>
+<div class="modal">
+    <h2>Participant Registration</h2>
+    
+    <form id="regForm">
+        <input type="hidden" id="role" name="role" value="participant">
+        <input type="hidden" id="selectedAvatar" name="avatar" value="" required>
 
-    <div class="container">
-        <div id="countdown-container">
-            <div class="title">Meet & Greet</div>
-            
-            <div id="target-date-text" class="target-date-display">Loading date...</div>
-
-            <div class="time-blocks">
-                <div class="time-box">
-                    <span class="number" id="days">00</span>
-                    <span class="label">Days</span>
+        <div class="input-group">
+            <label>Select Avatar (Cartoons, Cute Toys, Animals)</label>
+            <div class="avatar-container" id="avatarGrid">
                 </div>
-                <div class="time-box">
-                    <span class="number" id="hours">00</span>
-                    <span class="label">Hours</span>
-                </div>
-                <div class="time-box">
-                    <span class="number" id="minutes">00</span>
-                    <span class="label">Mins</span>
-                </div>
-                <div class="time-box">
-                    <span class="number" id="seconds">00</span>
-                    <span class="label">Secs</span>
-                </div>
-            </div>
         </div>
 
-        <a id="final-card" href="https://mdkads.github.io/MeetNgreet/" target="_blank">
-            <img src="https://i.pinimg.com/736x/1f/c6/e0/1fc6e0715e10544b5e2bd656c19fdfbb.jpg" alt="Click Me!">
-        </a>
-    </div>
+        <div class="input-group">
+            <label>Fullname</label>
+            <input type="text" name="fullname" required placeholder="John Doe">
+        </div>
 
-    <script>
-        // 🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟
-        // 🌟                                                                  🌟
-        // 🌟               CHANGE YOUR TARGET DATE AND TIME BELOW             🌟
-        // 🌟               Format: "Month DD, YYYY HH:MM:SS"                  🌟
-        // 🌟                                                                  🌟
+        <div class="input-group">
+            <label>Nickname</label>
+            <input type="text" name="nickname" required placeholder="Johnny">
+        </div>
+
+        <div class="input-group">
+            <label>Gender</label>
+            <select name="gender" required>
+                <option value="" disabled selected>Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Lokal</label>
+            <input type="text" name="lokal" required placeholder="Your Lokal">
+        </div>
+
+        <div class="input-group">
+            <label>Distrito</label>
+            <input type="text" name="distrito" required placeholder="Your Distrito">
+        </div>
+
+        <div class="input-group">
+            <label>Mobile Number</label>
+            <input type="tel" name="mobile" required placeholder="+63 912 345 6789">
+        </div>
+
+        <div class="input-group">
+            <label>Email address (optional)</label>
+            <input type="email" name="email" placeholder="john@example.com">
+        </div>
+
+        <button type="submit" class="btn" id="submitBtn">Register</button>
+        <div class="loader" id="loader"></div>
+        <div id="statusMessage"></div>
+    </form>
+</div>
+
+<script>
+    // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOHyjvNBhA-3YRKguJmRWFu9JIECtmpUE-wC7lEv1tO7ryJ0VfDX4NrmHJsxmwcnrtlQ/exec";
+
+    const avatarGrid = document.getElementById('avatarGrid');
+    const avatarInput = document.getElementById('selectedAvatar');
+    
+    // Updated styles: Added 'micah' (cartoons), 'big-ears'/'big-smile' (looney styles), and kept 'bottts' (cute toys)
+    const styles = ['adventurer', 'bottts', 'fun-emoji', 'shapes', 'thumbs', 'micah', 'big-ears', 'big-smile', 'miniavs'];
+    
+    for (let i = 1; i <= 100; i++) {
+        const style = styles[i % styles.length];
+        const imgUrl = `https://api.dicebear.com/7.x/${style}/svg?seed=Avatar${i}&backgroundColor=e5e7eb`;
         
-        const MY_TARGET_DATE = "May 15, 2026 15:30:00";
+        const img = document.createElement('img');
+        img.src = imgUrl;
+        img.className = 'avatar-item';
+        img.dataset.url = imgUrl;
         
-        // 🌟                                                                  🌟
-        // 🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟
+        img.onclick = function() {
+            document.querySelectorAll('.avatar-item').forEach(el => el.classList.remove('selected'));
+            this.classList.add('selected');
+            avatarInput.value = this.dataset.url;
+        };
+        avatarGrid.appendChild(img);
+    }
 
-
-        // --- Setup the Target Date and auto-populate the UI ---
-        const targetDateObj = new Date(MY_TARGET_DATE);
-        const countdownDate = targetDateObj.getTime();
-
-        // Auto-calculate how the date should look (e.g., "Friday, May 15, 2026 at 3:30 PM")
-        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-        const formattedDateString = targetDateObj.toLocaleDateString('en-US', dateOptions);
+    // Form Submission
+    document.getElementById('regForm').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Put the formatted date into the HTML directly above the countdown
-        document.getElementById("target-date-text").innerText = "see you on " + formattedDateString;
-
-
-        // --- Countdown Logic ---
-        const countdownContainer = document.getElementById("countdown-container");
-        const finalCard = document.getElementById("final-card");
-
-        const timerInterval = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = countdownDate - now;
-
-            // Time calculations
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Output the result
-            document.getElementById("days").innerText = days.toString().padStart(2, '0');
-            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
-            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
-            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
-
-            // If the countdown is over
-            if (distance < 0) {
-                clearInterval(timerInterval);
-                countdownContainer.style.display = "none";
-                finalCard.style.display = "block";
-            }
-        }, 1000);
-
-        // --- Brush Stroke Mouse Trail Logic ---
-        const canvas = document.getElementById('trailCanvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        let points = [];
-
-        function resizeCanvas() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
+        if(!avatarInput.value) {
+            alert("Please select an avatar!");
+            return;
         }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
 
-        window.addEventListener('mousemove', (e) => {
-            points.push({ x: e.clientX, y: e.clientY, age: 0 });
+        const btn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loader');
+        const status = document.getElementById('statusMessage');
+        const formData = new FormData(this);
+
+        btn.style.display = 'none';
+        loader.style.display = 'block';
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: formData,
+            mode: 'no-cors' // Required to bypass CORS errors for simple posts
+        }).then(() => {
+            loader.style.display = 'none';
+            status.style.display = 'block';
+            status.style.color = '#28a745';
+            status.innerText = "Registration Successful!";
+            this.reset();
+            document.querySelectorAll('.avatar-item').forEach(el => el.classList.remove('selected'));
+            avatarInput.value = '';
+            setTimeout(() => { btn.style.display = 'block'; status.style.display = 'none'; }, 3000);
+        }).catch(error => {
+            loader.style.display = 'none';
+            btn.style.display = 'block';
+            status.style.display = 'block';
+            status.style.color = 'red';
+            status.innerText = "Error registering. Try again.";
         });
-
-        function animateTrail() {
-            ctx.clearRect(0, 0, width, height);
-            
-            // Draw a smooth brush-like stroke
-            if (points.length > 1) {
-                ctx.beginPath();
-                ctx.moveTo(points[0].x, points[0].y);
-                for (let i = 1; i < points.length - 1; i++) {
-                    const xc = (points[i].x + points[i + 1].x) / 2;
-                    const yc = (points[i].y + points[i + 1].y) / 2;
-                    ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
-                }
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                
-                // Neon pink brush style
-                ctx.strokeStyle = 'rgba(255, 105, 180, 0.4)'; 
-                ctx.lineWidth = 15;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = 'rgba(255, 105, 180, 0.8)';
-                ctx.stroke();
-                ctx.shadowBlur = 0; // reset for next frame
-            }
-
-            // Age points and remove old ones
-            for (let i = 0; i < points.length; i++) {
-                points[i].age++;
-            }
-            points = points.filter(p => p.age < 20); // Trail length control
-
-            requestAnimationFrame(animateTrail);
-        }
-        animateTrail();
-
-        // --- Floating Animated Hearts Logic ---
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.innerHTML = '❤';
-            heart.classList.add('heart');
-            
-            // Random styling
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = Math.random() * 5 + 5 + 's'; // 5s to 10s
-            heart.style.opacity = Math.random() * 0.5 + 0.3;
-            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
-            
-            document.body.appendChild(heart);
-
-            // Remove heart after animation finishes to keep DOM clean
-            setTimeout(() => {
-                heart.remove();
-            }, 10000);
-        }
-
-        // Spawn a new heart every 400ms
-        setInterval(createHeart, 400);
-
-    </script>
+    });
+</script>
 </body>
 </html>
